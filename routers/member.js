@@ -6,14 +6,17 @@ const connection = require('../utils/db');
 
 // RESTful API 的列表
 router.get('/', async (req, res, next) => {
-  let [data, fields] = await connection.execute('SELECT * FROM order_list');
+  let [data, fields] = await connection.execute(
+    'SELECT * FROM order_list'
+    // 'SELECT * FROM order_list WHERE member_id=?'
+  );
   console.log(data);
   // res.send ==> 純文字
   // res.render ==> server-side render 會去找樣板
   res.json(data);
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:member_id', async (req, res, next) => {
   // req.params.id
   // req.query.page <- 第幾頁
 
