@@ -104,16 +104,16 @@ router.post("/login", async (req, res, next) => {
   console.log(req.session.member.id);
 });
 
-// router.get("/checklogin", async (req, res, next) => {
-//   if (req.session.member) {
-//     res.json({ msg: "login" });
-//   } else {
-//     res.json({ msg: "logout" });
-//   }
-// });
-// router.get("/logout", (req, res, next) => {
-//   req.session.member = null;
-//   res.sendStatus(202);
-// });
+router.get("/checklogin", async (req, res, next) => {
+  if (req.session.member) {
+    res.json({ msg: "login" });
+  } else {
+    res.json({ msg: "logout" });
+  }
+});
+router.get("/logout", (req, res, next) => {
+  req.session.member = null;
+  res.sendStatus(202);
+});
 
 module.exports = router;
