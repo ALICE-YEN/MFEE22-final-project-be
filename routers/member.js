@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 
-const connection = require('../utlis/db');
+const connection = require('../utils/db');
 
 // RESTful API 的列表
 router.get('/', async (req, res, next) => {
@@ -24,7 +24,7 @@ router.get('/:id', async (req, res, next) => {
 
   // 取得目前的總筆數
   let [total] = await connection.execute(
-    'SELECT COUNT(*) AS total FROM order_list WHERE id=?',
+    'SELECT COUNT(*) AS total FROM order_list WHERE member_id=?',
     [req.params.id]
   );
   console.log('bbbbbbb', total); // [ { total: 15 } ]
@@ -39,7 +39,7 @@ router.get('/:id', async (req, res, next) => {
   let offset = (page - 1) * perPage;
   // 取得資料
   let [data] = await connection.execute(
-    'SELECT * FROM order_list WHERE id=? ORDER BY date LIMIT ? OFFSET ?',
+    'SELECT * FROM order_details WHERE id=? ORDER BY date LIMIT ? OFFSET ?',
     [req.params.id, perPage, offset]
   );
 
