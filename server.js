@@ -8,10 +8,12 @@ const expressSession = require("express-session");
 
 let app = express();
 
+// app.use(cors());
+
 app.use(
   cors({
     //為了要讓 browser 在 CORS 的情況下還是幫我們送 cookie，可以設陣列(好幾個)
-    origin: ["http://localhost:3000"], //誰發出來的 前端
+    // origin: ["http://localhost:3000"], //誰發出來的 前端
     credentials: true,
   })
 );
