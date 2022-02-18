@@ -35,6 +35,9 @@ app.use(
 let authRouter = require("./routers/auth");
 app.use("/api/auth", authRouter);
 
+let memberRouter = require("./routers/member");
+app.use("/api/member", memberRouter);
+
 app.use((req, res, next) => {
   console.log("在所有路由中間件的後面 -> 404");
   res.status(404).send("Not Found");
