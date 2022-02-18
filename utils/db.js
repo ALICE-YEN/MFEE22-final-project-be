@@ -1,3 +1,4 @@
+// 更正資料夾名稱為utils
 const mysql = require("mysql2");
 require("dotenv").config();
 

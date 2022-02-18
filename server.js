@@ -7,6 +7,7 @@ const cors = require("cors");
 const expressSession = require("express-session");
 
 let app = express();
+
 app.use(
   cors({
     //為了要讓 browser 在 CORS 的情況下還是幫我們送 cookie，可以設陣列(好幾個)
@@ -14,6 +15,7 @@ app.use(
     credentials: true,
   })
 );
+
 //解析body資料 // extended: false -> querystring ,extended: true -> qs
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -37,6 +39,12 @@ app.use("/api/auth", authRouter);
 
 let memberRouter = require("./routers/member");
 app.use("/api/member", memberRouter);
+
+let productsRouter = require("./routers/products");
+app.use("/api/products", productsRouter);
+
+// let cartProductsRouter = require("./routers/cartProducts");
+// app.use("/api/cart-products", cartProductsRouter);
 
 app.use((req, res, next) => {
   console.log("在所有路由中間件的後面 -> 404");
