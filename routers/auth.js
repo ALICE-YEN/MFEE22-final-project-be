@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-const connection = require("../utlis/db");
+const connection = require("../utils/db");
 const argon2 = require("argon2");
 
 //檢查格式
