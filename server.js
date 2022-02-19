@@ -48,6 +48,9 @@ app.use("/api/products", productsRouter);
 // let cartProductsRouter = require("./routers/cartProducts");
 // app.use("/api/cart-products", cartProductsRouter);
 
+let courseRouter = require("./routers/course");
+app.use("/api/course", courseRouter);
+
 app.use((req, res, next) => {
   console.log("在所有路由中間件的後面 -> 404");
   res.status(404).send("Not Found");
