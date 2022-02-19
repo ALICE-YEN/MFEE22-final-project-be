@@ -22,6 +22,9 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// 抓圖路徑範例：http://localhost:3002/img/products/funboard001B-1.jpg
+app.use(express.static(path.join(__dirname, "public")));
+
 //啟用session，預設存在記憶體
 let FileStore = require("session-file-store")(expressSession);
 app.use(
