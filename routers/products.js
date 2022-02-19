@@ -5,7 +5,9 @@ const connection = require("../utils/db");
 // RESTful API 的列表
 // http://localhost:3002/api/products
 router.get("/", async (req, res, next) => {
-  let [data] = await connection.execute("SELECT * FROM products");
+  let [data] = await connection.execute(
+    "SELECT * FROM products GROUP BY left(product_no,7)"
+  );
   console.log(data);
   res.json(data);
 });
