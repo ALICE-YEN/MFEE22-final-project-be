@@ -13,14 +13,16 @@ let app = express();
 app.use(
   cors({
     //為了要讓 browser 在 CORS 的情況下還是幫我們送 cookie，可以設陣列(好幾個)
-    // origin: ["http://localhost:3000"], //誰發出來的 前端
-    credentials: true,
+    origin: ["http://localhost:3000"], //誰發出來的 前端
+    credentials: true, //set cookie才會生效
   })
 );
-
-//解析body資料 // extended: false -> querystring ,extended: true -> qs
+//解析body資料，將傳入的請求對象識別為string或array // extended: false -> querystring ,extended: true -> qs
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// 抓圖路徑範例：http://localhost:3002/img/products/funboard001B-1.jpg
+app.use(express.static(path.join(__dirname, "public")));
 
 //啟用session，預設存在記憶體
 let FileStore = require("session-file-store")(expressSession);
@@ -28,7 +30,7 @@ app.use(
   expressSession({
     store: new FileStore({ path: path.join(__dirname, "..", "sessions") }),
     //正式環境中會放在 /tmp/sessions檔案夾裡
-    //目前資料夾的上層，進入sessions資料夾內，在funwave-be外nodemon才不會重啟
+    //目前資料夾的上層，進入sessions資料夾內，放在funwave-be外nodemon才不會重啟
     secret: process.env.SESSION_SECRET, //session加密
     resave: false, //每次資料重傳，就算資料沒改也重存
     saveUninitialized: false,
@@ -42,8 +44,8 @@ app.use("/api/auth", authRouter);
 let memberRouter = require("./routers/member");
 app.use("/api/member", memberRouter);
 
-let productsRouter = require("./routers/products");
-app.use("/api/products", productsRouter);
+// let productsRouter = require("./routers/products");
+// app.use("/api/products", productsRouter);
 
 // let cartProductsRouter = require("./routers/cartProducts");
 // app.use("/api/cart-products", cartProductsRouter);

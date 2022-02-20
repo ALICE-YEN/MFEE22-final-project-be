@@ -3,6 +3,7 @@ const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const connection = require("../utils/db");
 const argon2 = require("argon2");
+const { sendEmail } = require("../nodemailer");
 
 //檢查格式
 const registerRules = [
@@ -10,10 +11,11 @@ const registerRules = [
   body("name")
     .trim()
     .isLength({ min: 3, max: 15 })
-    .withMessage("姓名稱需 3 ~ 15 字元"),
+    .withMessage("姓名需 3 ~ 15 字元"),
   // .notEmpty()
   // .withMessage('姓名或密碼不得為空'),
   body("password")
+    .trim()
     .matches(/\d/)
     .withMessage("請輸入數字")
     .isLength({ min: 5 })
@@ -46,13 +48,16 @@ router.post("/register", registerRules, async (req, res, next) => {
     });
   }
   //雜湊密碼
-  let hashPwd = await argon2.hash("password");
+  let hashPwd = await argon2.hash(req.body.password);
   //存到資料庫
   let [result] = await connection.execute(
     "INSERT INTO member (member_email,member_name,member_password) VALUES(?,?,?)",
     [req.body.email, req.body.name, hashPwd]
   );
   console.log(result);
+  //nodemailer發送
+  sendEmail(req.body.email);
+
   res.json({ message: "ok" });
 });
 
@@ -76,9 +81,9 @@ router.post("/login", async (req, res, next) => {
   let member = members[0];
 
   // 如果有這個帳號，再去比對密碼
-  // let result = await argon2.verify(member.member_password, req.body.password);
-  // console.log("password比對結果:", result);
-  let result = true;
+  let result = await argon2.verify(member.member_password, req.body.password);
+  console.log("password比對結果:", result);
+
   if (!result) {
     // 如果比對失敗
     return res.status(400).send({
@@ -95,12 +100,12 @@ router.post("/login", async (req, res, next) => {
   };
   //寫session 自訂member參數
   req.session.member = returnMember;
+
   //JWT
   res.json({
     code: "0", //成功
     data: returnMember,
   });
-
   console.log(req.session.member.id);
 });
 
@@ -108,12 +113,11 @@ router.get("/checklogin", async (req, res, next) => {
   if (req.session.member) {
     res.json({ msg: "login" });
   } else {
-    res.json({ msg: "logout" });
+    res.json({ msg: "尚未登入" });
   }
 });
 router.get("/logout", (req, res, next) => {
   req.session.member = null;
   res.sendStatus(202);
 });
-
 module.exports = router;
