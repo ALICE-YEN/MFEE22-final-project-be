@@ -8,6 +8,8 @@ const expressSession = require("express-session");
 
 let app = express();
 
+// app.use(cors());
+
 app.use(
   cors({
     //為了要讓 browser 在 CORS 的情況下還是幫我們送 cookie，可以設陣列(好幾個)
@@ -18,6 +20,9 @@ app.use(
 //解析body資料，將傳入的請求對象識別為string或array // extended: false -> querystring ,extended: true -> qs
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// 抓圖路徑範例：http://localhost:3002/img/products/funboard001B-1.jpg
+app.use(express.static(path.join(__dirname, "public")));
 
 //啟用session，預設存在記憶體
 let FileStore = require("session-file-store")(expressSession);
