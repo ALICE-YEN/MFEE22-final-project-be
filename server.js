@@ -44,8 +44,8 @@ app.use("/api/auth", authRouter);
 let memberRouter = require("./routers/member");
 app.use("/api/member", memberRouter);
 
-// let productsRouter = require("./routers/products");
-// app.use("/api/products", productsRouter);
+let productsRouter = require("./routers/products");
+app.use("/api/products", productsRouter);
 
 // let cartProductsRouter = require("./routers/cartProducts");
 // app.use("/api/cart-products", cartProductsRouter);
