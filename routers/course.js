@@ -9,7 +9,7 @@ router.get("/courseSpot/north", async (req, res, next) => {
     "SELECT * FROM course_spot WHERE area=?",
     ["北部"]
   );
-  console.log(data);
+  // console.log(data);
   res.json(data);
 });
 
@@ -20,7 +20,7 @@ router.get("/courseSpot/others", async (req, res, next) => {
     "SELECT * FROM course_spot WHERE area!=?",
     ["北部"]
   );
-  console.log(data);
+  // console.log(data);
   res.json(data);
 });
 
