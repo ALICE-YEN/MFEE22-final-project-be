@@ -13,6 +13,11 @@ let getMemberOrderList = async (req, res, next) => {
   res.json(data);
 };
 
+let getMemberCourseOrderList = async (req, res, next) => {
+  let data = await memberModel.getMemberCourseOrderList();
+  res.json(data);
+};
+
 let getMember = async (req, res, next) => {
   let member = await memberModel.getMember(req.params.memberId);
   res.json(member);
@@ -20,16 +25,23 @@ let getMember = async (req, res, next) => {
 
 let getMemberOrder = async (req, res, next) => {
   let data = await memberModel.getMemberOrder(req.params.orderId);
-
-  // 準備要 response
   res.json({
     data,
   });
 };
 
+// let getMemberCourseOrder = async (req, res, next) => {
+//   let data = await memberModel.getMemberCourseOrder(req.params.courseId);
+//   res.json({
+//     data,
+//   });
+// };
+
 module.exports = {
   getMemberList,
   getMemberOrderList,
+  getMemberCourseOrderList,
   getMember,
   getMemberOrder,
+  getMemberCourseOrder,
 };
