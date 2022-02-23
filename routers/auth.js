@@ -101,7 +101,6 @@ router.post("/login", async (req, res, next) => {
   //寫session 自訂member參數
   req.session.member = returnMember;
 
-  //JWT
   res.json({
     code: "0", //成功
     data: returnMember,
