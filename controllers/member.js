@@ -1,40 +1,47 @@
 // /controllers/member
 const memberModel = require("../models/Members");
 
-let getMemberOrder = async (req, res, next) => {
-  let data = await memberModel.getMemberOrder();
+let getMemberList = async (req, res, next) => {
+  let member = await memberModel.getMemberList();
   // res.send ==> 純文字
   // res.render ==> server-side render 會去找樣板
+  res.json(member);
+};
+
+let getMemberOrderList = async (req, res, next) => {
+  let data = await memberModel.getMemberOrderList();
   res.json(data);
 };
 
-let getAll = async (req, res, next) => {
-  //   // 取得目前在第幾頁
-  //   // 如果沒有設定 req.quyer.page，那就設成 1
-  //   let page = req.query.page || 1;
-  //   console.log("aaaaaaaaa", page);
+let getMemberCourseOrderList = async (req, res, next) => {
+  let data = await memberModel.getMemberCourseOrderList();
+  res.json(data);
+};
 
-  //   // 取得目前的總筆數
-  //   let total = await memberModel.countByCode(req.params.member_id);
+let getMember = async (req, res, next) => {
+  let member = await memberModel.getMember(req.params.memberId);
+  res.json(member);
+};
 
-  //   // 計算總共應該要有幾頁
-  //   const perPage = 3;
-  //   // lastPage: 總共有幾頁
-  //   const lastPage = Math.ceil(total / perPage);
-
-  //   // 計算 SQL 要用的 offset
-  //   let offset = (page - 1) * perPage;
-  //   // 取得資料
-  let data = await memberModel.getAll(req.params.orderId);
-
-  // 準備要 response
+let getMemberOrder = async (req, res, next) => {
+  let data = await memberModel.getMemberOrder(req.params.orderId);
   res.json({
     data,
   });
 };
 
+// let getMemberCourseOrder = async (req, res, next) => {
+//   let data = await memberModel.getMemberCourseOrder(req.params.courseId);
+//   res.json({
+//     data,
+//   });
+// };
+
 module.exports = {
+  getMemberList,
+  getMemberOrderList,
+  getMemberCourseOrderList,
+  getMember,
   getMemberOrder,
-  getAll,
-  // getMemberDetailsByCode,
+  getMemberCourseOrder,
 };
