@@ -21,7 +21,8 @@ router.get("/", async (req, res, next) => {
 // http://localhost:3002/api/products/LB-0001
 router.get("/:product_group", async (req, res, next) => {
   let [data] = await connection.execute(
-    "SELECT * FROM products WHERE product_group = 'LB-0001'"
+    "SELECT * FROM products WHERE product_group = ?",
+    [req.params.product_group]
   );
   console.log(data);
   res.json(data);
