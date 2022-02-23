@@ -47,12 +47,17 @@ app.use("/api/member", memberRouter);
 let productsRouter = require("./routers/products");
 app.use("/api/products", productsRouter);
 
+// app.get("/api/product-details/LB-0001");
+// app.get("/api/product-details/:product_group",(req,res,next)=>{
+
 // let cartProductsRouter = require("./routers/cartProducts");
 // app.use("/api/cart-products", cartProductsRouter);
 
 let courseRouter = require("./routers/course");
 app.use("/api/course", courseRouter);
 
+let customizedRouter = require("./routers/customized");
+app.use("/api/customized", customizedRouter);
 let surfspotRouter = require("./routers/surfspot");
 app.use("/api/surfspot", surfspotRouter);
 
@@ -66,5 +71,5 @@ app.use((err, req, res, next) => {
 });
 const port = process.env.SERVER_PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server running at port ${port}`);
+  console.log(`Server runnin  g at port ${port}`);
 });

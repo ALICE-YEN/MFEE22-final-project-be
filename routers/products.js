@@ -13,7 +13,11 @@ router.get("/", async (req, res, next) => {
 });
 
 // 從前端拿product_group
-// 後端給資料到前端
+// router.get("/:product_group", async (req, res, next) => {
+//   // console.log(req.responseFe.data);
+//   // res.json(req.responseFe.data);
+// });
+
 // http://localhost:3002/api/products/LB-0001
 router.get("/:product_group", async (req, res, next) => {
   let [data] = await connection.execute(
