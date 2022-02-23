@@ -15,13 +15,16 @@ let googlelogin = async (req, res, next) => {
   });
 
   const { email, name, picture } = ticket.getPayload();
-
+  // 判斷帳號是否存在
   if (email) {
   }
-  // let [result] = await connection.execute(
-  //   "INSERT INTO member (member_email,member_name,member_photo) VALUES(?,?,?,?)"
-  // );
-  // console.log(result);
+
+  //寫到資料庫
+  let [result] = await connection.execute(
+    "INSERT INTO member (member_email,member_name,member_password) VALUES(?,?,?)",
+    [email, name, picture]
+  );
+  console.log(result);
 
   res.status(201);
   res.json({ email, name, picture });

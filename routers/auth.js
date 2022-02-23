@@ -8,14 +8,24 @@ const { googlelogin } = require("../controllers/googlelogin");
 
 //檢查格式
 const registerRules = [
-  body("email").isEmail().withMessage("Email欄位請填寫正確格式"),
+  body("email")
+    .notEmpty()
+    .withMessage("Email不得為空")
+    .isEmail()
+    .withMessage("Email欄位請填寫正確格式"),
   body("name")
     .trim()
+    .notEmpty()
+    .withMessage("姓名不得為空")
     .isLength({ min: 3, max: 15 })
     .withMessage("姓名需 3 ~ 15 字元"),
-  // .notEmpty()
-  // .withMessage('姓名或密碼不得為空'),
-  body("password").trim().isLength({ min: 5 }).withMessage("密碼長度最少為 5"),
+  //
+  body("password")
+    .trim()
+    .notEmpty()
+    .withMessage("密碼不得為空")
+    .isLength({ min: 5 })
+    .withMessage("密碼長度最少為 5"),
   body("agree").notEmpty().withMessage("我同意不得為空"),
 ];
 
@@ -99,7 +109,7 @@ router.post("/login", async (req, res, next) => {
   req.session.member = returnMember;
 
   //api/auth/login/googlelogin
-  router.post("/googlelogin", googlelogin);
+  // router.post("/googlelogin", googlelogin);
   res.json({
     code: "0", //成功
     data: returnMember,
