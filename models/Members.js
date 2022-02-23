@@ -11,7 +11,18 @@ async function getMemberList() {
 
 // 取得MemberOrder資料
 async function getMemberOrderList() {
-  let [data] = await connection.execute("SELECT * FROM order_list");
+  let [data] = await connection.execute(
+    "SELECT * FROM order_list ORDER BY order_time DESC"
+  );
+  console.log(data);
+  return data;
+}
+
+// 取得MemberCourseOrder資料
+async function getMemberCourseOrderList() {
+  let [data] = await connection.execute(
+    "SELECT * FROM course_order ORDER BY courseDate DESC"
+  );
   console.log(data);
   return data;
 }
@@ -36,9 +47,18 @@ async function getMemberOrder(orderId) {
   return data;
 }
 
+// 取得CourseOrderList全部資料
+// async function getMemberCourseOrder(courseId) {
+//   let [data] = await connection.execute([courseId]);
+//   console.log(data);
+//   return data;
+// }
+
 module.exports = {
   getMemberList,
   getMemberOrderList,
+  getMemberCourseOrderList,
   getMember,
   getMemberOrder,
+  // getMemberCourseOrder,
 };
