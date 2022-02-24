@@ -28,22 +28,26 @@ router.get("/courseSpot/others", async (req, res, next) => {
 // http://localhost:3002/api/course/courseOrder
 router.post("/courseOrder", async (req, res, next) => {
   let [data] = await connection.execute(
-    "INSERT INTO course_order(course,courseDate,coursePrice,courseSpot,courseTime,name,pid,sex,bdDay,phone,guardian) VALUES(?,?,?,?,?,?,?,?,?,?,?) ",
+    "INSERT INTO course_order(course,courseTime,courseSpot,courseDate,coursePrice,amount,peopleNum,payMethod,name,pid,sex,bdDay,phone) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ",
     [
       req.body[0].course,
+      req.body[0].courseTime,
+      req.body[0].courseSpot,
       req.body[0].courseDate,
       req.body[0].coursePrice,
-      req.body[0].courseSpot,
-      req.body[0].courseTime,
+      req.body[0].amount,
+      req.body[0].peopleNum,
+      req.body[0].payMethod,
       req.body[1].name,
       req.body[1].pid,
       req.body[1].sex,
       req.body[1].bdDay,
       req.body[1].phone,
-      req.body[1].guardian,
     ]
   );
-  console.log(data);
+  console.log(req.body[0]);
+  console.log(req.body[1]);
+
   res.json({
     message: "ok收到課程報名訂單",
   });
