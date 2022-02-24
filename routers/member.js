@@ -3,6 +3,9 @@ const express = require("express");
 const router = express.Router();
 // const memberController = require("../controllers/member");
 const connection = require("../utils/db");
+const { checkLogin } = require("../middlewares/auth");
+
+router.use(checkLogin);
 
 // RESTful API 的列表
 // router.get("/api/member", memberController.getMemberList);
