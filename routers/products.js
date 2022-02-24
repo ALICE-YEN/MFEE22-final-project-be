@@ -12,8 +12,6 @@ router.get("/", async (req, res, next) => {
   res.json(data);
 });
 
-// 從前端拿product_group
-// 後端給資料到前端
 // http://localhost:3002/api/products/LB-0001
 router.get("/:product_group", async (req, res, next) => {
   let [data] = await connection.execute(

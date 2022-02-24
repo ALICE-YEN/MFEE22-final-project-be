@@ -13,7 +13,7 @@ let app = express();
 app.use(
   cors({
     //為了要讓 browser 在 CORS 的情況下還是幫我們送 cookie，可以設陣列(好幾個)
-    origin: ["http://localhost:3000"], //誰發出來的 前端
+    origin: ["http://localhost:3000"], //誰發出來的 前端(只有這個前端網址才能傳過來)
     credentials: true, //set cookie才會生效
   })
 );
@@ -47,11 +47,13 @@ app.use("/api/member", memberRouter);
 let productsRouter = require("./routers/products");
 app.use("/api/products", productsRouter);
 
-// let cartProductsRouter = require("./routers/cartProducts");
-// app.use("/api/cart-products", cartProductsRouter);
-
 let courseRouter = require("./routers/course");
 app.use("/api/course", courseRouter);
+
+let customizedRouter = require("./routers/customized");
+app.use("/api/customized", customizedRouter);
+let surfspotRouter = require("./routers/surfspot");
+app.use("/api/surfspot", surfspotRouter);
 
 app.use((req, res, next) => {
   console.log("在所有路由中間件的後面 -> 404");

@@ -4,22 +4,29 @@ const { body, validationResult } = require("express-validator");
 const connection = require("../utils/db");
 const argon2 = require("argon2");
 const { sendEmail } = require("../nodemailer");
+const { googlelogin } = require("../controllers/googlelogin");
 
 //檢查格式
 const registerRules = [
-  body("email").isEmail().withMessage("Email欄位請填寫正確格式"),
+  body("email")
+    .notEmpty()
+    .withMessage("Email不得為空")
+    .isEmail()
+    .withMessage("Email欄位請填寫正確格式"),
   body("name")
     .trim()
+    .notEmpty()
+    .withMessage("姓名不得為空")
     .isLength({ min: 3, max: 15 })
     .withMessage("姓名需 3 ~ 15 字元"),
-  // .notEmpty()
-  // .withMessage('姓名或密碼不得為空'),
+  //
   body("password")
     .trim()
-    .matches(/\d/)
-    .withMessage("請輸入數字")
+    .notEmpty()
+    .withMessage("密碼不得為空")
     .isLength({ min: 5 })
     .withMessage("密碼長度最少為 5"),
+  body("agree").notEmpty().withMessage("我同意不得為空"),
 ];
 
 //api/auth/register
@@ -74,7 +81,7 @@ router.post("/login", async (req, res, next) => {
   if (members.length === 0) {
     return res.status(400).send({
       code: "33006",
-      msg: "帳號或密碼錯誤，沒有資料",
+      msg: "無此帳號",
     });
   }
   //把會員資料從陣列中拿出來 mysql2套件轉出資料為陣列
@@ -101,7 +108,8 @@ router.post("/login", async (req, res, next) => {
   //寫session 自訂member參數
   req.session.member = returnMember;
 
-  //JWT
+  //api/auth/login/googlelogin
+  // router.post("/googlelogin", googlelogin);
   res.json({
     code: "0", //成功
     data: returnMember,
@@ -113,7 +121,7 @@ router.get("/checklogin", async (req, res, next) => {
   if (req.session.member) {
     res.json({ msg: "login" });
   } else {
-    res.json({ msg: "尚未登入" });
+    // res.json({ msg: "尚未登入" });
   }
 });
 router.get("/logout", (req, res, next) => {
