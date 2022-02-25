@@ -104,7 +104,13 @@ router.post(
 
     let [courseEvaluate] = await connection.execute(
       "INSERT INTO course_evaluate (name,message,rating,date,photo)VALUES(?,?,?,?,?) ",
-      [req.body.name, req.body.msg, req.body.rating, req.body.date, filename]
+      [
+        req.body.name,
+        req.body.message,
+        req.body.rating,
+        req.body.date,
+        filename,
+      ]
     );
 
     res.json({
@@ -115,8 +121,10 @@ router.post(
 
 // 取課程評價留言
 // http://localhost:3002/api/course/course-evaluate
-router.get("/course-evaluate", async (req, res, next) => {
-  let [evaluate] = await connection.execute("SELECT * FROM course_evaluate");
+router.post("/course-evaluate", async (req, res, next) => {
+  let [evaluate] = await connection.execute(
+    "SELECT * FROM course_evaluate ORDER BY id DESC"
+  );
   console.log(evaluate);
   res.json(evaluate);
 });
