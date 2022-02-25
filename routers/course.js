@@ -29,7 +29,7 @@ router.get("/courseSpot/others", async (req, res, next) => {
 // http://localhost:3002/api/course/courseOrder
 router.post("/courseOrder", async (req, res, next) => {
   let [data] = await connection.execute(
-    "INSERT INTO course_order(course,courseTime,courseSpot,courseDate,coursePrice,amount,peopleNum,payMethod,name,pid,sex,bdDay,phone) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ",
+    "INSERT INTO course_order(course,courseTime,courseSpot,courseDate,coursePrice,amount,peopleNum,payMethod,name,email,sex,note,phone) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ",
     [
       req.body[0].course,
       req.body[0].courseTime,
@@ -40,9 +40,9 @@ router.post("/courseOrder", async (req, res, next) => {
       req.body[0].peopleNum,
       req.body[0].payMethod,
       req.body[1].name,
-      req.body[1].pid,
+      req.body[1].email,
       req.body[1].sex,
-      req.body[1].bdDay,
+      req.body[1].note,
       req.body[1].phone,
     ]
   );
@@ -104,7 +104,13 @@ router.post(
 
     let [courseEvaluate] = await connection.execute(
       "INSERT INTO course_evaluate (name,message,rating,date,photo)VALUES(?,?,?,?,?) ",
-      [req.body.name, req.body.msg, req.body.rating, req.body.date, filename]
+      [
+        req.body.name,
+        req.body.message,
+        req.body.rating,
+        req.body.date,
+        filename,
+      ]
     );
 
     res.json({
@@ -115,13 +121,12 @@ router.post(
 
 // 取課程評價留言
 // http://localhost:3002/api/course/course-evaluate
-router.get("/course-evaluate", async (req, res, next) => {
-  let [north] = await connection.execute(
-    "SELECT * FROM course_spot WHERE area=?",
-    ["北部"]
+router.post("/course-evaluate", async (req, res, next) => {
+  let [evaluate] = await connection.execute(
+    "SELECT * FROM course_evaluate ORDER BY id DESC"
   );
-  // console.log(north);
-  res.json(north);
+  console.log(evaluate);
+  res.json(evaluate);
 });
 
 module.exports = router;
