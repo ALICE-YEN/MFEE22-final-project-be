@@ -89,7 +89,7 @@ router.post("/login", async (req, res, next) => {
 
   // 如果有這個帳號，再去比對密碼
   let result = await argon2.verify(member.member_password, req.body.password);
-  console.log("password比對結果:", result);
+  // console.log("password比對結果:", result);
 
   if (!result) {
     // 如果比對失敗
@@ -112,16 +112,18 @@ router.post("/login", async (req, res, next) => {
   // router.post("/googlelogin", googlelogin);
   res.json({
     code: "0", //成功
-    data: returnMember,
+    data: returnMember, //登入成功後的object
   });
   console.log(req.session.member.id);
 });
 
 router.get("/checklogin", async (req, res, next) => {
   if (req.session.member) {
-    res.json({ msg: "login" });
+    // res.json({ msg: "login" });
+    res.json(req.session.member);
+    // next(); //404 not found
   } else {
-    // res.json({ msg: "尚未登入" });
+    res.json({ msg: "尚未登入" });
   }
 });
 router.get("/logout", (req, res, next) => {
