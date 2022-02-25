@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../utils/db");
-
 // 傳送商品列表頁資料到前端
 // http://localhost:3002/api/products
 router.get("/", async (req, res, next) => {

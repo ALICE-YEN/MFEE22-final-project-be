@@ -104,6 +104,9 @@ router.post("/login", async (req, res, next) => {
     id: member.member_id,
     account: member.member_account,
     name: member.member_name,
+    email: member.member_email,
+    phone: member.member_phone,
+    address: member.member_address,
   };
   //寫session 自訂member參數
   req.session.member = returnMember;
@@ -119,11 +122,10 @@ router.post("/login", async (req, res, next) => {
 
 router.get("/checklogin", async (req, res, next) => {
   if (req.session.member) {
-    // res.json({ msg: "login" });
     res.json(req.session.member);
     // next(); //404 not found
   } else {
-    res.json({ msg: "尚未登入" });
+    res.status(400).json({ msg: "尚未登入" });
   }
 });
 router.get("/logout", (req, res, next) => {
