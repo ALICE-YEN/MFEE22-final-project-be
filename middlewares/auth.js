@@ -2,10 +2,9 @@
 
 let checkLogin = function (req, res, next) {
   if (req.session.member) {
-    //res.json(req.session.member);
-    next();
+    res.json(req.session.member);
   } else {
-    res.json({ msg: "尚未登入" });
+    res.json({ msg: "尚未登入middleware" });
   }
 };
 
