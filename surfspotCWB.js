@@ -1,7 +1,6 @@
 const axios = require("axios");
 const dayjs = require("dayjs");
 require("dayjs/locale/zh-tw");
-
 const connection = require("./utils/db");
 require("dotenv").config();
 
@@ -13,6 +12,7 @@ require("dotenv").config();
   //   password: process.env.DB_PASSWORD,
   //   database: process.env.DB_NAME,
   // });
+
   try {
     // 根據日期變數去抓當前時間
     dayjs.locale("zh-tw");
@@ -127,9 +127,9 @@ require("dotenv").config();
     let rawData3 = response3.data.records.location;
     let getTime =
       response3.data.records.location[0].validTime[0].weatherElement[0].time;
-    let getDatetime =
-      response3.data.records.location[0].validTime[0].weatherElement[0].time[0]
-        .dataTime;
+    // let getDatetime =
+    //   response3.data.records.location[0].validTime[0].weatherElement[0].time[0]
+    //     .dataTime;
     // console.log("getDatetime", getDatetime);
     // console.log(getTime);
 
@@ -164,7 +164,7 @@ require("dotenv").config();
         };
         result3.push(inner);
       });
-      // console.log(result3);
+      // console.log("result3", result3);
 
       result3.map(async (station) => {
         // console.log("station", station);
@@ -186,7 +186,7 @@ require("dotenv").config();
           dryTime2,
           station.stationId,
         ];
-        console.log("updateData", updateData);
+        // console.log("updateData", updateData);
       });
       // return result3;
     }
