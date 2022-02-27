@@ -47,6 +47,9 @@ app.use("/api/member", memberRouter);
 let productsRouter = require("./routers/products");
 app.use("/api/products", productsRouter);
 
+let cartProductsRouter = require("./routers/cartProducts");
+app.use("/api/cartProducts", cartProductsRouter);
+
 let courseRouter = require("./routers/course");
 app.use("/api/course", courseRouter);
 
