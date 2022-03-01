@@ -4,7 +4,7 @@ const { body, validationResult } = require("express-validator");
 const connection = require("../utils/db");
 const argon2 = require("argon2");
 const { sendEmail } = require("../nodemailer");
-const { googlelogin } = require("../controllers/googlelogin");
+// const { googlelogin } = require("../controllers/googlelogin");
 
 //檢查格式
 const registerRules = [
@@ -101,13 +101,20 @@ router.post("/login", async (req, res, next) => {
 
   //記錄在session
   let returnMember = {
-    id: member.member_id,
+    member_id: member.member_id,
     account: member.member_account,
     name: member.member_name,
     email: member.member_email,
     phone: member.member_phone,
     address: member.member_address,
+    photo: member.filename,
+    // password: member.member_password,
+    receiver_name: member.receiver_name,
+    receiver_phone: member.receiver_phone,
+    receiver_address: member.receiver_address,
+    remark: member.remark,
   };
+
   //寫session 自訂member參數
   req.session.member = returnMember;
 
@@ -115,14 +122,18 @@ router.post("/login", async (req, res, next) => {
   // router.post("/googlelogin", googlelogin);
   res.json({
     code: "0", //成功
-    data: returnMember, //登入成功後的object
+    data: returnMember,
+    // returnOrderList, //登入成功後的object
   });
   console.log(req.session.member.id);
 });
 
 router.get("/checklogin", async (req, res, next) => {
   if (req.session.member) {
-    res.json(req.session.member);
+    let [member] = await connection.execute(
+      `SELECT * FROM member where member_id = ${req.session.member.member_id}`
+    );
+    res.json(member[0]);
     // next(); //404 not found
   } else {
     res.status(400).json({ msg: "尚未登入" });
