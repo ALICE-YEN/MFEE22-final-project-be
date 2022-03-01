@@ -1,13 +1,17 @@
 const express = require("express");
-const { log } = require("npmlog");
 const router = express.Router();
 const connection = require("../utils/db");
 
 // 傳送商品列表頁資料到前端
 // http://localhost:3002/api/products
 router.get("/", async (req, res, next) => {
+  // 取得目前在哪個大小分類
+  let bigCats = req.query.bigCats || 1;
+  console.log("bigCats", bigCats);
+
   let [data] = await connection.execute(
-    "SELECT * FROM products GROUP BY left(product_no,7)"
+    "SELECT * FROM products WHERE big_cat_id=? GROUP BY product_group",
+    [bigCats]
   );
   console.log(data);
   res.json(data);
