@@ -4,7 +4,7 @@ const { body, validationResult } = require("express-validator");
 const connection = require("../utils/db");
 const argon2 = require("argon2");
 const { sendEmail } = require("../nodemailer");
-const { googlelogin } = require("../controllers/googlelogin");
+// const { googlelogin } = require("../controllers/googlelogin");
 
 //檢查格式
 const registerRules = [
