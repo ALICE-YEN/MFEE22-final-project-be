@@ -82,7 +82,7 @@ require("dotenv").config();
     // });
     // console.log(data2);
 
-    // 存進資料庫;
+    // 存進資料庫
     findLocation.map(async (station) => {
       // console.log("station", station);
       let location = station.locationName;
@@ -116,6 +116,7 @@ require("dotenv").config();
     let rawData2 = response2.data.records.weatherElement.location;
     // console.log(rawData2);
 
+    // 存進資料庫
     rawData2.map(async (station) => {
       // console.log("station", station);
       let locationCode = station.locationCode;
@@ -137,6 +138,7 @@ require("dotenv").config();
     let rawData3 = response3.data.records.location;
     // console.log("rawData3", rawData3);
 
+    // 整理資料陣列(使用for loop將stationId、datatime、parameterValue => push至陣列中)
     let result3Array = [];
     let location = [];
     for (let i = 0; i < rawData3.length; i++) {
@@ -158,6 +160,7 @@ require("dotenv").config();
     }
     // console.log("result3Array", result3Array);
 
+    // 寫一個findTimeResult func 找出parameterValue吻合"滿潮"、"乾潮"
     function findTimeResult(mydata, type) {
       // console.log("type", type);
       let timeResult = mydata.filter((tr) => {
@@ -165,11 +168,13 @@ require("dotenv").config();
         return tr.parameterValue === type;
       });
 
+      // map 出 timeResult 存進資料庫的格式
       return timeResult.map((tr) => {
         return tr.dataTime.split(" ").pop().replace(":00", "");
       });
     }
 
+    // 定義fullTime1.2、dryTime1.2 存進資料庫的格式
     result3Array.map((station) => {
       // console.log("station", station);
       // console.log("timeResult", timeResult);
@@ -186,6 +191,8 @@ require("dotenv").config();
         dryTime2,
         station[0].stationId,
       ];
+
+      // 存進資料庫
       let saveResult3 = connection.execute(
         "UPDATE surfspot_tide SET fullTime1=?, fullTime2=?, dryTime1=?, dryTime2=? WHERE stationId=?",
         [fullTime1, fullTime2, dryTime1, dryTime2, station[0].stationId]
@@ -205,6 +212,7 @@ require("dotenv").config();
     let rawData4 = response4.data.records.seaSurfaceObs.location;
     // console.log(rawData4);
 
+    // 定義 result4 新陣列，將所須的值整理 push 進陣列中
     let result4 = new Array();
     if (rawData4) {
       rawData4.forEach(function (item, i) {
@@ -230,6 +238,8 @@ require("dotenv").config();
       // console.log(result4);
       // return result4;
     }
+
+    // 存進資料庫
     result4.map(async (station) => {
       // console.log("station", station);
       let stationID = station.stationID;
