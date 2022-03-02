@@ -47,7 +47,7 @@ router.get("/", async (req, res, next) => {
 
   // 基底：沒有選擇大小分類
   if (bigCats === 0 && smallCats === 0) {
-    // O: 價格區間篩選、品牌篩選、顏色篩選
+    // 價格區間篩選:O、品牌篩選:O、顏色篩選:O
     if (
       priceLowest !== "all" &&
       priceHighest !== "all" &&
@@ -72,7 +72,7 @@ router.get("/", async (req, res, next) => {
         ]
       );
       res.json(data);
-      // O: 價格區間篩選、顏色篩選 X: 品牌篩選
+      // 價格區間篩選:O、品牌篩選:X、顏色篩選:O
     } else if (
       priceLowest !== "all" &&
       priceHighest !== "all" &&
@@ -96,7 +96,31 @@ router.get("/", async (req, res, next) => {
         ]
       );
       res.json(data);
-      // O: 品牌篩選 X: 價格區間篩選、顏色篩選
+      // 價格區間篩選:O、品牌篩選:X、顏色篩選:X
+    } else if (
+      priceLowest !== "all" &&
+      priceHighest !== "all" &&
+      brand === "all" &&
+      color === "false"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE price>=? AND price<=? GROUP BY product_group",
+        [priceLowest, priceHighest]
+      );
+      res.json(data);
+      // 價格區間篩選:O、品牌篩選:O、顏色篩選:X
+    } else if (
+      priceLowest !== "all" &&
+      priceHighest !== "all" &&
+      brand !== "all" &&
+      color === "false"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE price>=? AND price<=? AND brand_id=? GROUP BY product_group",
+        [priceLowest, priceHighest, brand]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:O、顏色篩選:X
     } else if (
       priceLowest === "all" &&
       priceHighest === "all" &&
@@ -108,7 +132,42 @@ router.get("/", async (req, res, next) => {
         [brand]
       );
       res.json(data);
-      // X: 價格區間篩選、品牌篩選、顏色篩選
+      // 價格區間篩選:X、品牌篩選:O、顏色篩選:O
+    } else if (
+      priceLowest === "all" &&
+      priceHighest === "all" &&
+      brand !== "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE brand_id=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          brand,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:X、顏色篩選:O
+    } else if (
+      priceLowest === "all" &&
+      priceHighest === "all" &&
+      brand === "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [color1, color2, color3, color4, color5, color6, color7, color8, color9]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:X、顏色篩選:X
     } else {
       let [data] = await connection.execute(
         "SELECT * FROM products GROUP BY product_group"
@@ -117,36 +176,141 @@ router.get("/", async (req, res, next) => {
     }
     // 基底：選擇大分類
   } else if (bigCats !== 0 && smallCats === 0) {
-    // O: 價格區間篩選、品牌篩選
-    if (priceLowest !== "all" && priceHighest !== "all" && brand !== "all") {
-      let [data] = await connection.execute(
-        "SELECT * FROM products WHERE big_cat_id=? AND price>=? AND price<=? AND brand_id=? GROUP BY product_group",
-        [bigCats, priceLowest, priceHighest, brand]
-      );
-      res.json(data);
-    } // O: 價格區間篩選 X: 品牌篩選
-    else if (
+    // 價格區間篩選:O、品牌篩選:O、顏色篩選:O
+    if (
       priceLowest !== "all" &&
       priceHighest !== "all" &&
-      brand === "all"
+      brand !== "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE big_cat_id=? AND price>=? AND price<=? AND brand_id=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          bigCats,
+          priceLowest,
+          priceHighest,
+          brand,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
+      );
+      res.json(data);
+      // 價格區間篩選:O、品牌篩選:X、顏色篩選:O
+    } else if (
+      priceLowest !== "all" &&
+      priceHighest !== "all" &&
+      brand === "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE big_cat_id=? AND price>=? AND price<=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          bigCats,
+          priceLowest,
+          priceHighest,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
+      );
+      res.json(data);
+      // 價格區間篩選:O、品牌篩選:X、顏色篩選:X
+    } else if (
+      priceLowest !== "all" &&
+      priceHighest !== "all" &&
+      brand === "all" &&
+      color === "false"
     ) {
       let [data] = await connection.execute(
         "SELECT * FROM products WHERE big_cat_id=? AND price>=? AND price<=? GROUP BY product_group",
         [bigCats, priceLowest, priceHighest]
       );
       res.json(data);
-    } // O: 品牌篩選 X: 價格區間篩選
-    else if (
+      // 價格區間篩選:O、品牌篩選:O、顏色篩選:X
+    } else if (
+      priceLowest !== "all" &&
+      priceHighest !== "all" &&
+      brand !== "all" &&
+      color === "false"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE big_cat_id=? AND price>=? AND price<=? AND brand_id=? GROUP BY product_group",
+        [bigCats, priceLowest, priceHighest, brand]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:O、顏色篩選:X
+    } else if (
       priceLowest === "all" &&
       priceHighest === "all" &&
-      brand !== "all"
+      brand !== "all" &&
+      color === "false"
     ) {
       let [data] = await connection.execute(
         "SELECT * FROM products WHERE big_cat_id=? AND brand_id=? GROUP BY product_group",
         [bigCats, brand]
       );
       res.json(data);
-      // X: 價格區間篩選、品牌篩選
+      // 價格區間篩選:X、品牌篩選:O、顏色篩選:O
+    } else if (
+      priceLowest === "all" &&
+      priceHighest === "all" &&
+      brand !== "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE big_cat_id=? AND brand_id=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          bigCats,
+          brand,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:X、顏色篩選:O
+    } else if (
+      priceLowest === "all" &&
+      priceHighest === "all" &&
+      brand === "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE big_cat_id=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          bigCats,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:X、顏色篩選:X
     } else {
       let [data] = await connection.execute(
         "SELECT * FROM products WHERE big_cat_id=? GROUP BY product_group",
@@ -156,36 +320,141 @@ router.get("/", async (req, res, next) => {
     }
     // 基底：選擇小分類
   } else if (smallCats !== 0) {
-    // O: 價格區間篩選、品牌篩選
-    if (priceLowest !== "all" && priceHighest !== "all" && brand !== "all") {
+    // 價格區間篩選:O、品牌篩選:O、顏色篩選:O
+    if (
+      priceLowest !== "all" &&
+      priceHighest !== "all" &&
+      brand !== "all" &&
+      color === "true"
+    ) {
       let [data] = await connection.execute(
-        "SELECT * FROM products WHERE small_cat_id=? AND price>=? AND price<=? AND brand_id=? GROUP BY product_group",
-        [smallCats, priceLowest, priceHighest, brand]
+        "SELECT * FROM products WHERE small_cat_id=? AND price>=? AND price<=? AND brand_id=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          smallCats,
+          priceLowest,
+          priceHighest,
+          brand,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
       );
       res.json(data);
-      // O: 價格區間篩選 X: 品牌篩選
+      // 價格區間篩選:O、品牌篩選:X、顏色篩選:O
     } else if (
       priceLowest !== "all" &&
       priceHighest !== "all" &&
-      brand === "all"
+      brand === "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE small_cat_id=? AND price>=? AND price<=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          smallCats,
+          priceLowest,
+          priceHighest,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
+      );
+      res.json(data);
+      // 價格區間篩選:O、品牌篩選:X、顏色篩選:X
+    } else if (
+      priceLowest !== "all" &&
+      priceHighest !== "all" &&
+      brand === "all" &&
+      color === "false"
     ) {
       let [data] = await connection.execute(
         "SELECT * FROM products WHERE small_cat_id=? AND price>=? AND price<=? GROUP BY product_group",
         [smallCats, priceLowest, priceHighest]
       );
       res.json(data);
-      // O: 品牌篩選 X: 價格區間篩選
+      // 價格區間篩選:O、品牌篩選:O、顏色篩選:X
+    } else if (
+      priceLowest !== "all" &&
+      priceHighest !== "all" &&
+      brand !== "all" &&
+      color === "false"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE small_cat_id=? AND price>=? AND price<=? AND brand_id=? GROUP BY product_group",
+        [smallCats, priceLowest, priceHighest, brand]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:O、顏色篩選:X
     } else if (
       priceLowest === "all" &&
       priceHighest === "all" &&
-      brand !== "all"
+      brand !== "all" &&
+      color === "false"
     ) {
       let [data] = await connection.execute(
         "SELECT * FROM products WHERE small_cat_id=? AND brand_id=? GROUP BY product_group",
         [smallCats, brand]
       );
       res.json(data);
-      // X: 價格區間篩選、品牌篩選
+      // 價格區間篩選:X、品牌篩選:O、顏色篩選:O
+    } else if (
+      priceLowest === "all" &&
+      priceHighest === "all" &&
+      brand !== "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE small_cat_id=? AND brand_id=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          smallCats,
+          brand,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:X、顏色篩選:O
+    } else if (
+      priceLowest === "all" &&
+      priceHighest === "all" &&
+      brand === "all" &&
+      color === "true"
+    ) {
+      let [data] = await connection.execute(
+        "SELECT * FROM products WHERE small_cat_id=? AND color_id IN (?,?,?,?,?,?,?,?,?) GROUP BY product_group",
+        [
+          smallCats,
+          color1,
+          color2,
+          color3,
+          color4,
+          color5,
+          color6,
+          color7,
+          color8,
+          color9,
+        ]
+      );
+      res.json(data);
+      // 價格區間篩選:X、品牌篩選:X、顏色篩選:X
     } else {
       let [data] = await connection.execute(
         "SELECT * FROM products WHERE small_cat_id=? GROUP BY product_group",
@@ -210,43 +479,6 @@ router.get("/:product_group", async (req, res, next) => {
   );
   console.log(data);
   res.json(data);
-});
-
-// 前端傳送訂單到後端order_list、order-details
-router.post("/order", async (req, res, next) => {
-  console.log("order", req.body);
-  let [result] = await connection.execute(
-    "INSERT INTO order_list (member_id,amount,payment,payment_status,delivery,receiver,receiver_phone,address,convenient_store,status,order_time) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-    [
-      req.body.member_id,
-      req.body.amount,
-      req.body.payment,
-      req.body.payment_status,
-      req.body.delivery,
-      req.body.receiver,
-      req.body.receiver_phone,
-      req.body.address,
-      req.body.convenient_store,
-      req.body.status,
-      req.body.order_time,
-    ]
-  );
-
-  for (var i = 0; i < req.body.order_details.length; i++) {
-    let [resultDetail] = await connection.execute(
-      "INSERT INTO order_details (order_id,product_no,quantity) VALUES (?,?,?)",
-      [
-        result.insertId,
-        req.body.order_details[i].product_no,
-        req.body.order_details[i].count,
-      ]
-    );
-    // console.log("order_details", req.body.order_details);
-    // console.log("order_details[0]", req.body.order_details[0]);
-    // console.log("product_no", req.body.order_details[0].product_no);
-  }
-
-  res.json({ message: "ok" });
 });
 
 module.exports = router;
