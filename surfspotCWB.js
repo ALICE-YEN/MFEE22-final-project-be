@@ -137,10 +137,30 @@ require("dotenv").config();
     let rawData3 = response3.data.records.location;
     // console.log("rawData3", rawData3);
 
-    // 這邊開始兜資料!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    function findTimeResult(timeResults, type) {
-      // console.log(timeResults);
-      let timeResult = timeResults.filter((tr) => {
+    let result3Array = [];
+    let location = [];
+    for (let i = 0; i < rawData3.length; i++) {
+      let stationId = rawData3[i].stationId;
+      location.push({ stationId });
+      let locationID = location.slice(-1);
+
+      let weatherElement = rawData3[i].validTime[0].weatherElement;
+      let time = [];
+      for (let j = 0; j < weatherElement[0].time.length; j++) {
+        let dataTime = weatherElement[0].time[j].dataTime;
+        let parameterValue =
+          weatherElement[0].time[j].parameter[0].parameterValue;
+        time.push({ dataTime, parameterValue });
+      }
+      var result3 = { ...locationID, mydata: time };
+      // console.log(result3);
+      result3Array.push(result3);
+    }
+    // console.log("result3Array", result3Array);
+
+    function findTimeResult(mydata, type) {
+      // console.log("type", type);
+      let timeResult = mydata.filter((tr) => {
         // console.log("tr", tr);
         return tr.parameterValue === type;
       });
@@ -150,46 +170,13 @@ require("dotenv").config();
       });
     }
 
-    let getTime = rawData3.flatMap((location) => {
-      // console.log("location", location);
-      return location.validTime[0].weatherElement[0].time;
-    });
-
-    let timeResult = new Array();
-    if (getTime) {
-      getTime.forEach(function (value, i) {
-        // console.log("value", value);
-        let innerTime = {
-          dataTime: value.dataTime,
-          parameterValue: value.parameter[0].parameterValue,
-        };
-        timeResult.push(innerTime);
-      });
-      // console.log("timeResult", timeResult);
-      // return timeResult;
-    }
-
-    let result3 = new Array();
-    if (rawData3) {
-      // console.log(rawData3);
-      rawData3.forEach(function (item, i) {
-        // console.log("item", item);
-        let inner = {
-          stationId: item.stationId,
-          timeResult,
-        };
-        result3.push(inner);
-      });
-    }
-    // console.log("result3", result3);
-
-    result3.map((station) => {
+    result3Array.map((station) => {
       // console.log("station", station);
       // console.log("timeResult", timeResult);
-      let fullTime = findTimeResult(station.timeResult, "滿潮");
+      let fullTime = findTimeResult(station.mydata, "滿潮");
       let fullTime1 = fullTime.length > 0 ? fullTime[0] : "";
       let fullTime2 = fullTime.length > 1 ? fullTime[1] : "";
-      let dryTime = findTimeResult(station.timeResult, "乾潮");
+      let dryTime = findTimeResult(station.mydata, "乾潮");
       let dryTime1 = dryTime.length > 0 ? dryTime[0] : "";
       let dryTime2 = dryTime.length > 1 ? dryTime[1] : "";
       let updateData = [
@@ -197,11 +184,11 @@ require("dotenv").config();
         fullTime2,
         dryTime1,
         dryTime2,
-        station.stationId,
+        station[0].stationId,
       ];
       let saveResult3 = connection.execute(
         "UPDATE surfspot_tide SET fullTime1=?, fullTime2=?, dryTime1=?, dryTime2=? WHERE stationId=?",
-        [fullTime1, fullTime2, dryTime1, dryTime2, station.stationId]
+        [fullTime1, fullTime2, dryTime1, dryTime2, station[0].stationId]
       );
       // console.log("updateData", updateData);
     });
