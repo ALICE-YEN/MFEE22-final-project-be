@@ -17,31 +17,19 @@ router.get("/${auth.id}", async (req, res, next) => {
 });
 
 // router.get("/api/member/member-order", memberController.getMemberOrderList);
-// router.get("/member-order", async (req, res, next) => {
-//   let [member] = await connection.execute(
-//     `SELECT * FROM order_list ORDER BY order_time DESC WHERE member_id = ${req.params.memberId} AND valid = 0`,
-//     [req.params.memberId]
-//   );
-//   res.json(member);
-//   // console.log(member);
-// });
-
-router.post("/order/:order_id/delete", async (req, res, next) => {
-  try {
-    let [result] = await connection.execute(
-      `UPDATE order_list SET valid = 2, status = '訂單已取消' WHERE id = ${req.params.order_id}`
-    );
-
-    res.json({ isCancel: result.changedRows > 0 });
-  } catch (error) {
-    res.json({ message: "資料刪除失敗" });
-  }
+router.get("/member-order", async (req, res, next) => {
+  let [member] = await connection.execute(
+    `SELECT * FROM order_list ORDER BY order_time DESC WHERE member_id = ${req.params.memberId} AND valid = 0`,
+    [req.params.memberId]
+  );
+  res.json(member);
+  // console.log(member);
 });
 
-router.post("/member-order/:order_id/delete", async (req, res, next) => {
+router.post("/order/:orderId/delete", async (req, res, next) => {
   try {
     let [result] = await connection.execute(
-      `UPDATE order_list SET valid = 1 WHERE id = ${req.params.order_id}`
+      `UPDATE order_list SET valid = 2, status = '訂單已取消' WHERE id = ${req.params.orderId}`
     );
 
     res.json({ isDeleted: result.changedRows > 0 });
@@ -50,13 +38,13 @@ router.post("/member-order/:order_id/delete", async (req, res, next) => {
   }
 });
 
-// router.get("/api/member/member-courseorder", memberController.getMemberCourseOrderList);
-router.get("/member-courseorder/:member_id", async (req, res, next) => {
+// // router.get("/api/member/member-courseorder/:id", memberController.getMemberCourseOrderDetails);
+router.get("/member-courseorderdetails/:id", async (req, res, next) => {
   let [data] = await connection.execute(
-    `SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.member_id = ? AND valid = 0 GROUP BY course_order.id ORDER BY course_order.courseDate DESC`,
-    [req.params.member_id]
+    // "SELECT * FROM order_details WHERE id=?",
+    "SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.id = ?",
+    [req.params.id]
   );
-  // console.log(data);
   res.json(data);
 });
 
@@ -72,13 +60,25 @@ router.post("/member-courseorder/:id/delete", async (req, res, next) => {
   }
 });
 
-// // router.get("/api/member/member-courseorder/:id", memberController.getMemberCourseOrderDetails);
-router.get("/member-courseorder/:id", async (req, res, next) => {
+router.post("/member-order/:id/delete", async (req, res, next) => {
+  try {
+    let [result] = await connection.execute(
+      `UPDATE order_list SET valid = 1 WHERE id = ${req.params.id}`
+    );
+
+    res.json({ isDeleted: result.changedRows > 0 });
+  } catch (error) {
+    res.json({ message: "資料刪除失敗" });
+  }
+});
+
+// router.get("/api/member/member-courseorder", memberController.getMemberCourseOrderList);
+router.get("/member-courseorder/:member_id", async (req, res, next) => {
   let [data] = await connection.execute(
-    // "SELECT * FROM order_details WHERE id=?",
-    "SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE id = ? ORDER BY course_order.order_time DESC",
-    [req.params.id]
+    `SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.member_id = ? AND valid = 0 GROUP BY course_order.id ORDER BY course_order.courseDate DESC`,
+    [req.params.member_id]
   );
+  // console.log(data);
   res.json(data);
 });
 
