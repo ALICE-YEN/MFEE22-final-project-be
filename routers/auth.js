@@ -107,7 +107,7 @@ router.post("/login", async (req, res, next) => {
     email: member.member_email,
     phone: member.member_phone,
     address: member.member_address,
-    photo: member.filename,
+    photo: member.member_photo,
     // password: member.member_password,
     receiver_name: member.receiver_name,
     receiver_phone: member.receiver_phone,
