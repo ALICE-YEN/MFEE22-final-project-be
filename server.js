@@ -55,6 +55,7 @@ app.use("/api/course", courseRouter);
 
 let customizedRouter = require("./routers/customized");
 app.use("/api/customized", customizedRouter);
+
 let surfspotRouter = require("./routers/surfspot");
 app.use("/api/surfspot", surfspotRouter);
 
