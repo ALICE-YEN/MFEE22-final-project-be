@@ -4,8 +4,6 @@ const { body, validationResult } = require("express-validator");
 const connection = require("../utils/db");
 const argon2 = require("argon2");
 const { sendEmail } = require("../nodemailer");
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
 // const { googlelogin } = require("../controllers/googlelogin");
 
 //檢查格式
@@ -30,28 +28,6 @@ const registerRules = [
     .withMessage("密碼長度最少為 5"),
   body("agree").notEmpty().withMessage("我同意不得為空"),
 ];
-
-// decoded.PAYLOAD = {
-//   id: 18,
-//   account: "12345",
-//   name: "123",
-//   email: "123@test.com",
-//   phone: "0933333333",
-//   address: null,
-//   iat: 1646055290,
-//   exp: 1646141690,
-// };
-
-// //(user)帶入的參數改什麼
-// const generateAccessToken = (user) => {
-//   return jwt.sign(returnMember, process.env.JWT_KEY, {
-//     expiresIn: "1 day",
-//   });
-// };
-
-// const generateRefreshToken = (user) => {
-//   return jwt.sign(returnMember, process.env.JWT_REFRESH_KEY);
-// };
 
 //api/auth/register
 router.post("/register", registerRules, async (req, res, next) => {
@@ -138,91 +114,33 @@ router.post("/login", async (req, res, next) => {
     receiver_address: member.receiver_address,
     remark: member.remark,
   };
-  // //寫session 自訂member參數
-  // req.session.member = returnMember;
 
-  // res.json({
-  //   code: "0", //成功
-  //   data: returnMember, //登入成功後的object
-  // });
-  // console.log(req.session.member.id);
+  //寫session 自訂member參數
+  req.session.member = returnMember;
 
-  //jwt
-  // 使用者資料存入Token，設定 Token 時效為一天，並帶入自訂密鑰（JWT_KEY）
-  const token = jwt.sign(returnMember, process.env.JWT_KEY, {
-    expiresIn: "1 day",
-  });
+  //api/auth/login/googlelogin
+  // router.post("/googlelogin", googlelogin);
   res.json({
-    code: "0",
-    msg: "登入成功",
-    token: token, //token碼
+    code: "0", //成功
     data: returnMember,
+    // returnOrderList, //登入成功後的object
   });
+  console.log(req.session.member.id);
 });
 
-//api/auth/jwt-verify
-router.post("/jwt-verify", (req, res, next) => {
-  // 從前端請求的 header 取得和擷取 JWT
-  //JWT使用Bearer 開頭的 Authorization
-  const token = req.headers.authorization.replace("Bearer ", "");
-  console.log("token:", token);
-  if (token === null) return res.sendStatus(401).json({ msg: "沒有找到token" });
-  //returnMember怎麼讀出來
-  //解碼token(驗證secret和檢查效期)
-  const decoded = jwt.verify(token, process.env.JWT_KEY);
-  console.log("decoded:", decoded);
-});
-
-//api/auth/refresh
-// let refreshTokens = [];
-// router.post("/refresh", (req, res, next) => {
-//   //從前端拿取更新token
-
-//   //沒有token或沒有驗證報錯
-//   if (!req.body.token) return res.status(401).json({ msg: "沒有token" });
-//   if (!refreshTokens.includes(req.body.token)) {
-//     return res.status(403).json({ msg: "Refresh token 沒被驗證" });
-//   }
-//   jwt.verify(
-//     req.body.token,
-//     process.env.JWT_REFRESH_KEY,
-//     (err, returnMember) => {
-//       err && console.log(err);
-//       refreshTokens = refreshTokens.filter((token) => token !== req.body.token);
-
-//       //都沒問題，創建新的 token、refresh token送給前端
-//       const newAccessToken = generateAccessToken(user);
-//       const newRefreshToken = generateRefreshToken(user);
-//       res.status(200).json({
-//         accessToken: newAccessToken,
-//         refreshToken: newRefreshToken,
-//       });
-//     }
-//   );
-// });
-
-//checklogin怎麼判斷
-router.get("/checklogin", (req, res, next) => {
-  console.log(req.query.token); //undefined
-  console.log(req.body.token); //undefined
-  if (req.query.token) {
-    res.json({
-      msg: "已登入",
-    });
+router.get("/checklogin", async (req, res, next) => {
+  if (req.session.member) {
+    let [member] = await connection.execute(
+      `SELECT * FROM member where member_id = ${req.session.member.member_id}`
+    );
+    res.json(member[0]);
+    // next(); //404 not found
   } else {
     res.status(400).json({ msg: "尚未登入" });
   }
 });
-// router.get("/logout", (req, res, next) => {
-//   req.session.member = null;
-//   res.sendStatus(202);
-// });
-
 router.get("/logout", (req, res, next) => {
-  // refreshTokens = refreshTokens.filter((token) => token !== req.body.token);
-  console.log(req.body.token); //undefined
-  req.body.token = null;
+  req.session.member = null;
   res.sendStatus(202);
 });
-
 module.exports = router;
