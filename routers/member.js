@@ -154,7 +154,7 @@ router.post("/:memberId", uploader.single("photo"), async (req, res, next) => {
 router.get("/member-order/:member_id", async (req, res, next) => {
   let [data] = await connection.execute(
     // "SELECT * FROM order_details WHERE id=?",
-    "SELECT * FROM ( ( order_details INNER JOIN products ON order_details.product_id = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id ORDER BY order_list.order_time DESC",
+    "SELECT * FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id ORDER BY order_list.order_time DESC",
     [req.params.member_id]
   );
   res.json(data);
@@ -164,7 +164,7 @@ router.get("/member-order/:member_id", async (req, res, next) => {
 router.get("/member-orderdetails/:order_id", async (req, res, next) => {
   let [data] = await connection.execute(
     // "SELECT * FROM order_details WHERE id=?",
-    "SELECT * FROM ( ( order_details INNER JOIN products ON order_details.product_id = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE order_list.id = ? ORDER BY order_list.order_time DESC",
+    "SELECT * FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE order_list.id = ? ORDER BY order_list.order_time DESC",
     [req.params.order_id]
   );
   res.json(data);
