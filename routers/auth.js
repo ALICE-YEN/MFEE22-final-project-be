@@ -102,12 +102,12 @@ router.post("/login", async (req, res, next) => {
   //記錄在session
   let returnMember = {
     member_id: member.member_id,
-    account: member.member_account,
-    name: member.member_name,
-    email: member.member_email,
-    phone: member.member_phone,
-    address: member.member_address,
-    photo: member.member_photo,
+    member_account: member.member_account,
+    member_name: member.member_name,
+    member_email: member.member_email,
+    member_phone: member.member_phone,
+    member_address: member.member_address,
+    member_photo: member.member_photo,
     // password: member.member_password,
     receiver_name: member.receiver_name,
     receiver_phone: member.receiver_phone,
@@ -133,8 +133,10 @@ router.get("/checklogin", async (req, res, next) => {
     let [member] = await connection.execute(
       `SELECT * FROM member where member_id = ${req.session.member.member_id}`
     );
+
     res.json(member[0]);
-    // next(); //404 not found
+    console.log(member[0]);
+    // res.json(req.session.member);
   } else {
     res.status(400).json({ msg: "尚未登入" });
   }
