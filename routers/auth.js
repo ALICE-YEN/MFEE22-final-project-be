@@ -125,12 +125,18 @@ router.post("/login", async (req, res, next) => {
 
   //記錄在session
   let returnMember = {
-    id: member.member_id,
+    member_id: member.member_id,
     account: member.member_account,
     name: member.member_name,
     email: member.member_email,
     phone: member.member_phone,
     address: member.member_address,
+    photo: member.filename,
+    // password: member.member_password,
+    receiver_name: member.receiver_name,
+    receiver_phone: member.receiver_phone,
+    receiver_address: member.receiver_address,
+    remark: member.remark,
   };
   // //寫session 自訂member參數
   // req.session.member = returnMember;

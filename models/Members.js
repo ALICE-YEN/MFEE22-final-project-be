@@ -40,7 +40,7 @@ async function getMember(memberId) {
 // 取得OrderList全部資料
 async function getMemberOrder(orderId) {
   let [data] = await connection.execute(
-    "SELECT * FROM ((order_details INNER JOIN products ON order_details.product_id = products.product_id) INNER JOIN order_list ON order_details.order_id = order_list.id) INNER JOIN member ON order_list.member_id = member.member_id WHERE order_id=?",
+    "SELECT * FROM ((order_details INNER JOIN products ON order_details.product_id = products.product_id) INNER JOIN order_list ON order_details.order_id = order_list.id) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id=?",
     [orderId]
   );
   console.log(data);

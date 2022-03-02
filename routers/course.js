@@ -121,47 +121,47 @@ router.post(
 
 // 取所有課程評價留言
 //localhost:3002/api/course/course-evaluate
-router.post("/course-evaluate", async (req, res, next) => {
-  let [evaluate] = await connection.execute(
-    "SELECT * FROM course_evaluate ORDER BY id DESC"
-  );
-  // console.log(evaluate);
-  res.json(evaluate);
-});
+// router.post("/course-evaluate", async (req, res, next) => {
+//   let [evaluate] = await connection.execute(
+//     "SELECT * FROM course_evaluate ORDER BY id DESC"
+//   );
+//   // console.log(evaluate);
+//   res.json(evaluate);
+// });
 
 // 課程評價留言改版成分頁 先改成get
-// router.get("/course-evaluate", async (req, res, next) => {
-//   //取得目前在第幾頁,沒有req.query.page 就設成1
-//   let page = req.query.page || 1;
-//   console.log("aaa", page);
+router.get("/course-evaluate", async (req, res, next) => {
+  //取得目前在第幾頁,沒有req.query.page 就設成1
+  let page = req.query.page || 1;
+  // console.log("aaa", page);
 
-//   // 取得目前的評價總筆數;
-//   let [evaluateCount] = await connection.execute(
-//     "SELECT COUNT(*) AS total FROM course_evaluate "
-//   );
-//   evaluateCount = evaluateCount[0].total;
+  // 取得目前的評價總筆數;
+  let [evaluateCount] = await connection.execute(
+    "SELECT COUNT(*) AS total FROM course_evaluate "
+  );
+  evaluateCount = evaluateCount[0].total;
 
-//   //計算總共要有幾頁
-//   //先決定一頁有幾筆=3筆
-//   const perPage = 3;
-//   //最後一頁
-//   const lastPage = Math.ceil(evaluateCount / perPage);
+  //計算總共要有幾頁
+  //先決定一頁有幾筆=3筆
+  const perPage = 3;
+  //最後一頁
+  const lastPage = Math.ceil(evaluateCount / perPage);
 
-//   //計算SQL要用的offect
-//   let offset = (page - 1) * perPage;
+  //計算SQL要用的offect
+  let offset = (page - 1) * perPage;
 
-//   //取得資料
-//   // SELECT * FROM course_evaluate ORDER BY id DESC LIMIT 3 OFFSET
-//   let [evaluate] = await connection.execute(
-//     "SELECT * FROM course_evaluate ORDER BY id DESC LIMIT ? OFFSET ?",
-//     [perPage, offset]
-//   );
+  //取得資料
+  // SELECT * FROM course_evaluate ORDER BY id DESC LIMIT 3 OFFSET
+  let [evaluate] = await connection.execute(
+    "SELECT * FROM course_evaluate ORDER BY id DESC LIMIT ? OFFSET ?",
+    [perPage, offset]
+  );
 
-//   // 準備要response
-//   res.json({
-//     pagination: { evaluateCount, perPage, page, lastPage },
-//     evaluate,
-//   });
-// });
+  // 準備要response
+  res.json({
+    pagination: { evaluateCount, perPage, page, lastPage },
+    evaluate,
+  });
+});
 
 module.exports = router;

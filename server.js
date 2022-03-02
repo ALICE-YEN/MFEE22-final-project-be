@@ -8,7 +8,7 @@ const expressSession = require("express-session");
 
 let app = express();
 
-// app.use(cors());
+app.use(cors());
 
 app.use(
   cors({
@@ -55,8 +55,17 @@ app.use("/api/course", courseRouter);
 
 let customizedRouter = require("./routers/customized");
 app.use("/api/customized", customizedRouter);
+
 let surfspotRouter = require("./routers/surfspot");
 app.use("/api/surfspot", surfspotRouter);
+
+let homeRouter = require("./routers/home");
+
+// let informationRouter = require("./routers/information");
+
+app.use("/api/home", homeRouter);
+
+// app.use("/api/information", informationRouter);
 
 app.use((req, res, next) => {
   console.log("在所有路由中間件的後面 -> 404");
