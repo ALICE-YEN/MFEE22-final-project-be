@@ -88,7 +88,7 @@ router.get("/", async (req, res, next) => {
     let offset = (nowPage - 1) * perPage;
 
     // todo[5]
-    let [pageData] = await connection.execute("SELECT * FROM information ORDER BY information.create_time DESC LIMIT ? OFFSET ?", 
+    let [pageData] = await connection.execute("SELECT info_no, info_cat_id, big_title, author, big_img, create_time, one_text_one, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id ORDER BY information.create_time DESC LIMIT ? OFFSET ?", 
     [ perPage, offset ]
     );
 
