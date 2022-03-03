@@ -77,7 +77,7 @@ router.get("/", async (req, res, next) => {
     // todo[2]
     let [midTotalInfo] = await connection.execute("SELECT COUNT(*) AS total FROM information");
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
@@ -147,7 +147,7 @@ router.get("/cat-two", async (req, res, next) => {
     // todo[2]
     let [midTotalInfo] = await connection.execute("SELECT COUNT(*) AS total FROM information WHERE info_cat_id = ?", [2])
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
@@ -224,7 +224,7 @@ router.post("/all-search", async (req, res, next) => {
         '%' + req.body.searchWord + '%',
     ]);
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
@@ -271,7 +271,7 @@ router.post("/cat-one-search", async (req, res, next) => {
         '%' + req.body.catOneSearchWord + '%',
     ]);
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
@@ -319,7 +319,7 @@ router.post("/cat-two-search", async (req, res, next) => {
         '%' + req.body.catTwoSearchWord + '%',
     ]);
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
