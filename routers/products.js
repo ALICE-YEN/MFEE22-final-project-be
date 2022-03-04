@@ -383,7 +383,7 @@ router.get("/", async (req, res, next) => {
         console.log("total", total);
 
         // 計算總共應該要有幾頁 lastPage
-        const perPage = 20;
+        const perPage = 16;
         const lastPage = Math.ceil(total / perPage);
 
         // 計算 SQL 要用的 offset
