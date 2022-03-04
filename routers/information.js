@@ -77,7 +77,7 @@ router.get("/", async (req, res, next) => {
     // todo[2]
     let [midTotalInfo] = await connection.execute("SELECT COUNT(*) AS total FROM information");
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
@@ -88,7 +88,7 @@ router.get("/", async (req, res, next) => {
     let offset = (nowPage - 1) * perPage;
 
     // todo[5]
-    let [pageData] = await connection.execute("SELECT * FROM information ORDER BY information.create_time DESC LIMIT ? OFFSET ?", 
+    let [pageData] = await connection.execute("SELECT info_no, info_cat_id, big_title, author, big_img, create_time, one_text_one, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id ORDER BY information.create_time DESC LIMIT ? OFFSET ?", 
     [ perPage, offset ]
     );
 
@@ -147,7 +147,7 @@ router.get("/cat-two", async (req, res, next) => {
     // todo[2]
     let [midTotalInfo] = await connection.execute("SELECT COUNT(*) AS total FROM information WHERE info_cat_id = ?", [2])
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
@@ -224,7 +224,7 @@ router.post("/all-search", async (req, res, next) => {
         '%' + req.body.searchWord + '%',
     ]);
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
@@ -271,7 +271,7 @@ router.post("/cat-one-search", async (req, res, next) => {
         '%' + req.body.catOneSearchWord + '%',
     ]);
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]
@@ -319,7 +319,7 @@ router.post("/cat-two-search", async (req, res, next) => {
         '%' + req.body.catTwoSearchWord + '%',
     ]);
     // console.log("midTotalInfo內容為:", midTotalInfo);
-    totalInfo = midTotalInfo[0].total;
+    let totalInfo = midTotalInfo[0].total;
     // console.log("totalInfo內容為:", totalInfo);
 
     // todo[3]

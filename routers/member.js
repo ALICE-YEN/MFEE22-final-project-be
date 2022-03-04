@@ -74,12 +74,23 @@ router.post("/member-order/:id/delete", async (req, res, next) => {
 
 // router.get("/api/member/member-courseorder", memberController.getMemberCourseOrderList);
 router.get("/member-courseorder/:member_id", async (req, res, next) => {
+  const perPage = 5;
+  const page = req.query.page > 0 ? (req.query.page - 1) * perPage : 1;
   let [data] = await connection.execute(
-    `SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.member_id = ? AND valid = 0 GROUP BY course_order.id ORDER BY course_order.courseDate DESC`,
+    `SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.member_id = ? AND valid = 0 GROUP BY course_order.id ORDER BY course_order.courseDate DESC LIMIT ${perPage} OFFSET ${page}`,
     [req.params.member_id]
   );
-  // console.log(data);
-  res.json(data);
+  const [countData] = await connection.execute(
+    `SELECT COUNT(*) as count FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.member_id = ? AND valid = 0`,
+    [req.params.member_id]
+  );
+  const { count } = countData[0];
+  res.json({
+    data,
+    pagination: {
+      pages: Math.ceil(count / perPage),
+    },
+  });
 });
 
 // amount router.get("/api/member/:memberId", memberController.getMember);
