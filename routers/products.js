@@ -368,12 +368,41 @@ router.get("/", async (req, res, next) => {
           [fin1, fin2, fin3]
         );
         res.json(data);
-        // 價格區間篩選:X、品牌篩選:X、顏色篩選:X、衝浪舵篩選:X
+        // 價格區間篩選:X、品牌篩選:X、顏色篩選:X、衝浪舵篩選:X 試做分頁ing
       } else {
-        let [data] = await connection.execute(
-          "SELECT * FROM products GROUP BY product_group"
+        // 取得目前在第幾頁
+        let page = req.query.page || 1;
+        console.log("page", page);
+
+        // 取得目前的總筆數
+        let [total] = await connection.execute(
+          "SELECT COUNT(*) AS total FROM products GROUP BY product_group"
         );
-        res.json(data);
+        console.log("total物件", total);
+        total = total.length;
+        console.log("total", total);
+
+        // 計算總共應該要有幾頁 lastPage
+        const perPage = 20;
+        const lastPage = Math.ceil(total / perPage);
+
+        // 計算 SQL 要用的 offset
+        let offset = (page - 1) * perPage;
+        // 取得資料
+        let [data] = await connection.execute(
+          "SELECT * FROM products GROUP BY product_group LIMIT ? OFFSET ?",
+          [perPage, offset]
+        );
+
+        res.json({
+          pagination: { total, perPage, page, lastPage },
+          data,
+        });
+
+        // let [data] = await connection.execute(
+        //   "SELECT * FROM products GROUP BY product_group"
+        // );
+        // res.json(data);
       }
       // 基底：選擇大分類
     } else if (bigCats !== 0 && smallCats === 0) {
