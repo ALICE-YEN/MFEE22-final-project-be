@@ -7,7 +7,7 @@ const connection = require("../utils/db");
 router.post("/", async (req, res, next) => {
   console.log("order", req.body);
   let [result] = await connection.execute(
-    "INSERT INTO order_list (member_id,amount,payment,payment_status,delivery,receiver,receiver_phone,address,convenient_store,status,order_time) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+    "INSERT INTO order_list (member_id,amount,payment,payment_status,delivery,receiver,receiver_phone,address,convenient_store,status) VALUES (?,?,?,?,?,?,?,?,?,?)",
     [
       req.body.member_id,
       req.body.amount,
@@ -19,17 +19,17 @@ router.post("/", async (req, res, next) => {
       req.body.address,
       req.body.convenient_store,
       req.body.status,
-      req.body.order_time,
     ]
   );
 
   for (var i = 0; i < req.body.order_details.length; i++) {
     let [resultDetail] = await connection.execute(
-      "INSERT INTO order_details (order_id,product_no,quantity) VALUES (?,?,?)",
+      "INSERT INTO order_details (order_id,product_no,quantity,style) VALUES (?,?,?,?)",
       [
         result.insertId,
         req.body.order_details[i].product_no,
         req.body.order_details[i].count,
+        req.body.order_details[i].style,
       ]
     );
     // console.log("order_details", req.body.order_details);
