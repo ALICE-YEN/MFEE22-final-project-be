@@ -22,7 +22,7 @@ router.get("/", async (req, res, next) => {
   let [data] = await connection.execute(
     `SELECT * FROM products WHERE ${wishDone} GROUP BY product_group`
   );
-  console.log("collect", data);
+  // console.log("collect", data);
   res.json(data);
 });
 module.exports = router;
