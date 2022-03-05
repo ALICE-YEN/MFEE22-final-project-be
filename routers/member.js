@@ -41,7 +41,6 @@ router.post("/order/:orderId/delete", async (req, res, next) => {
 // // router.get("/api/member/member-courseorder/:id", memberController.getMemberCourseOrderDetails);
 router.get("/member-courseorderdetails/:id", async (req, res, next) => {
   let [data] = await connection.execute(
-    // "SELECT * FROM order_details WHERE id=?",
     "SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.id = ?",
     [req.params.id]
   );
@@ -75,7 +74,7 @@ router.post("/member-order/:id/delete", async (req, res, next) => {
 // router.get("/api/member/member-courseorder", memberController.getMemberCourseOrderList);
 router.get("/member-courseorder/:member_id", async (req, res, next) => {
   const perPage = 5;
-  const page = req.query.page > 0 ? (req.query.page - 1) * perPage : 1;
+  const page = req.query.page > 0 ? (req.query.page - 1) * perPage : 0;
   let [data] = await connection.execute(
     `SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.member_id = ? AND valid = 0 GROUP BY course_order.id ORDER BY course_order.courseDate DESC LIMIT ${perPage} OFFSET ${page}`,
     [req.params.member_id]
@@ -104,7 +103,7 @@ router.get("/:memberId", async (req, res, next) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "..", "public", "uploads", "member"));
+    cb(null, path.join(__dirname, "..", "public", "img", "member"));
   },
   filename: function (req, file, cb) {
     console.log("multer-filename", file);
@@ -141,7 +140,7 @@ router.post("/:memberId", uploader.single("photo"), async (req, res, next) => {
     const member = JSON.parse(req.body.data);
     console.log(member);
 
-    let filename = req.file ? "/uploads/member/" + req.file.filename : "";
+    let filename = req.file ? "/img/member/" + req.file.filename : "";
     console.log("filename!");
     console.log(filename);
     let password = await argon2.hash(member.password);
@@ -161,14 +160,25 @@ router.post("/:memberId", uploader.single("photo"), async (req, res, next) => {
   }
 });
 
-// router.get("/api/member/member-order/:orderId", memberController.getMemberOrderList);
+// router.get("/api/member/member-order/:member_id", memberController.getMemberOrderList);
 router.get("/member-order/:member_id", async (req, res, next) => {
+  const perPage = 7;
+  const page = req.query.page > 0 ? (req.query.page - 1) * perPage : 0;
   let [data] = await connection.execute(
-    // "SELECT * FROM order_details WHERE id=?",
-    "SELECT * FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id ORDER BY order_list.order_time DESC",
+    `SELECT *, FLOOR(SUM(order_list.amount) OVER(ORDER BY order_list.id) / 200) AS cumulative_sum FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id ORDER BY order_list.id DESC LIMIT ${perPage} OFFSET ${page}`,
     [req.params.member_id]
   );
-  res.json(data);
+  const [countData] = await connection.execute(
+    `SELECT COUNT(*) as count FROM (SELECT COUNT(*) as count FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id) as sub`,
+    [req.params.member_id]
+  );
+  const { count } = countData[0];
+  res.json({
+    data,
+    pagination: {
+      pages: Math.ceil(count / perPage),
+    },
+  });
 });
 
 // router.get("/api/member/member-order/:orderId", memberController.getMemberOrderDetails);
