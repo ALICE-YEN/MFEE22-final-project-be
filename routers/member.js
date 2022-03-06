@@ -165,11 +165,11 @@ router.get("/member-order/:member_id", async (req, res, next) => {
   const perPage = 7;
   const page = req.query.page > 0 ? (req.query.page - 1) * perPage : 0;
   let [data] = await connection.execute(
-    `SELECT *, FLOOR(SUM(order_list.amount) OVER(ORDER BY order_list.id) / 200) AS cumulative_sum FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id ORDER BY order_list.id DESC LIMIT ${perPage} OFFSET ${page}`,
+    `SELECT *, FLOOR(SUM(order_list.amount) OVER(ORDER BY order_list.id) / 200) AS cumulative_sum FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_no ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id ORDER BY order_list.id DESC LIMIT ${perPage} OFFSET ${page}`,
     [req.params.member_id]
   );
   const [countData] = await connection.execute(
-    `SELECT COUNT(*) as count FROM (SELECT COUNT(*) as count FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id) as sub`,
+    `SELECT COUNT(*) as count FROM (SELECT COUNT(*) as count FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_no ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id) as sub`,
     [req.params.member_id]
   );
   const { count } = countData[0];
@@ -185,7 +185,7 @@ router.get("/member-order/:member_id", async (req, res, next) => {
 router.get("/member-orderdetails/:order_id", async (req, res, next) => {
   let [data] = await connection.execute(
     // "SELECT * FROM order_details WHERE id=?",
-    "SELECT * FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_id ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE order_list.id = ? ORDER BY order_list.order_time DESC",
+    "SELECT * FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_no ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE order_list.id = ? ORDER BY order_list.order_time DESC",
     [req.params.order_id]
   );
   res.json(data);
