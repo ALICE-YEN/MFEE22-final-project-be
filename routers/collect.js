@@ -9,7 +9,7 @@ router.get("/", async (req, res, next) => {
     var array = string.split(","); // [FB-0001,FB-0002,FB-0003]
     for (var i = 0; i < array.length; i++) {
       data = data + `product_group = "${array[i]}" OR `;
-      console.log("data", data);
+      // console.log("data", data);
     }
     data = data.substring(0, data.length - 3);
     // "FB-0001" OR product_group OR=> "FB-0001" OR product_group
