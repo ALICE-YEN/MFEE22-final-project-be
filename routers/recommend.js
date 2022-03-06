@@ -4,10 +4,10 @@ const connection = require("../utils/db");
 //推薦商品
 router.get("/", async (req, res, next) => {
   let [data] = await connection.execute(
-    "SELECT * FROM products WHERE big_cat_id=? ORDER BY rand() LIMIT 3",
+    "SELECT * FROM products WHERE small_cat_id=? ORDER BY rand() LIMIT 3",
     [req.query.rec]
   );
-  console.log("推薦", data);
+  //   console.log("推薦", data);
   res.json(data);
 });
 
