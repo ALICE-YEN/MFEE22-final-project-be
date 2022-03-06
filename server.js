@@ -65,6 +65,12 @@ app.use("/api/home", homeRouter);
 
 app.use("/api/information", informationRouter);
 
+let collectRouter = require("./routers/collect");
+app.use("/api/collect", collectRouter);
+
+let recommendRouter = require("./routers/recommend");
+app.use("/api/recommend", recommendRouter);
+
 app.use((req, res, next) => {
   console.log("在所有路由中間件的後面 -> 404");
   res.status(404).send("Not Found");
