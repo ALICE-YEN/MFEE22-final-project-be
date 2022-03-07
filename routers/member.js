@@ -98,7 +98,15 @@ router.get("/:memberId", async (req, res, next) => {
     "SELECT a.*, SUM(b.amount) amount FROM member a JOIN order_list b ON a.member_id = b.member_id GROUP BY a.member_id HAVING a.member_id = ?",
     [req.params.memberId]
   );
-  res.json(member);
+  if (member.length > 0) {
+    res.json(member);
+    return;
+  }
+  let [rawMember] = await connection.execute(
+    "SELECT * FROM member WHERE member_id = ?",
+    [req.params.memberId]
+  );
+  res.json(rawMember);
 });
 
 const storage = multer.diskStorage({
@@ -148,6 +156,7 @@ router.post("/:memberId", uploader.single("photo"), async (req, res, next) => {
       let [result] = await connection.execute(
         `UPDATE member set member_photo='${filename}', member_name='${member.member_name}', member_email='${member.member_email}', member_password='${password}', member_phone='${member.member_phone}', member_address='${member.member_address}', receiver_name='${member.receiver_name}', receiver_phone='${member.receiver_phone}', receiver_address='${member.receiver_address}', remark='${member.remark}' WHERE member_id = ${req.params.memberId}`
       );
+      res.json({ isChanged: result.changedRows > 0, filename });
     } else {
       let [result] = await connection.execute(
         `UPDATE member set member_name='${member.member_name}', member_email='${member.member_email}', member_password='${password}', member_phone='${member.member_phone}', member_address='${member.member_address}', receiver_name='${member.receiver_name}', receiver_phone='${member.receiver_phone}', receiver_address='${member.receiver_address}', remark='${member.remark}' WHERE member_id = ${req.params.memberId}`
