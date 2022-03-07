@@ -171,7 +171,7 @@ router.post("/:memberId", uploader.single("photo"), async (req, res, next) => {
 
 // router.get("/api/member/member-order/:member_id", memberController.getMemberOrderList);
 router.get("/member-order/:member_id", async (req, res, next) => {
-  const perPage = 7;
+  const perPage = 5;
   const page = req.query.page > 0 ? (req.query.page - 1) * perPage : 0;
   let [data] = await connection.execute(
     `SELECT *, FLOOR(SUM(order_list.amount) OVER(ORDER BY order_list.id) / 200) AS cumulative_sum FROM ( ( order_details INNER JOIN products ON order_details.product_no = products.product_no ) INNER JOIN order_list ON order_details.order_id = order_list.id ) INNER JOIN member ON order_list.member_id = member.member_id WHERE member.member_id = ? AND valid = 0 or valid = 2 GROUP BY order_list.id ORDER BY order_list.id DESC LIMIT ${perPage} OFFSET ${page}`,
