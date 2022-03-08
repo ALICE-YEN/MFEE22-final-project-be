@@ -190,13 +190,64 @@ router.get("/:info_no", async (req, res, next) => {
         "SELECT MIN(info_id) info_id, create_time, info_no, big_title, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id WHERE info_cat_id = ? AND info_id > ?  ORDER BY information.info_id DESC LIMIT ?",
         [nowInfoCatId, nowInfoID, 1]
     );
-    // console.log("下一筆資料:", nextData);
+    // console.log("下一筆資料:", nextData); // 正常
 
-    let [prevData] = await connection.execute(
-        "SELECT MAX(info_id) info_id, create_time, info_no, big_title, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id WHERE info_cat_id = ? AND info_id < ?  ORDER BY information.info_id DESC LIMIT ?",
+    // 因應下方SQL壞掉的問題，做出的修正解決(先抓到要的info_id，再針對該info_id去撈文章資料)
+    let [prevTargetIdData] = await connection.execute(
+        "SELECT MAX(info_id) info_id FROM information WHERE info_cat_id = ? AND info_id < ? LIMIT ?",
         [nowInfoCatId, nowInfoID, 1]
     );
-    // console.log("上一筆資料:", prevData);
+    // console.log("prevTargetIdData為", prevTargetIdData); // [ { info_id: 10 } ]
+
+    let prevTargetId = prevTargetIdData[0].info_id;
+    // console.log("prevTargetId為", prevTargetId);
+
+    // ////這段不用寫
+    // let prevData = [];
+
+    // async function getPrevData(prevTargetId) {
+    //     if (prevTargetId === null) {
+    //         let prevData = [{
+    //             info_id: null,
+    //             create_time: null,
+    //             info_no: null,
+    //             big_title: null,
+    //             info_cat: null
+    //         }];
+
+    //         return prevData;
+    //     }
+    //     else {
+    //         let [prevData] = await connection.execute(
+    //             "SELECT info_id, create_time, info_no, big_title, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id WHERE info_id = ? LIMIT ?",
+    //             [prevTargetId, 1]
+                
+    //         );
+
+    //         return prevData;
+    //     } // else
+    // }
+
+    // prevData = getPrevData(prevTargetId);
+    // ////這段不用寫，改成若找不到上一筆資料時prevData: []，由前端判斷prevData.length === 0 即可
+
+    let [prevData] = await connection.execute(
+
+    "SELECT info_id, create_time, info_no, big_title, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id WHERE info_id = ? LIMIT ?",
+    [prevTargetId, 1]
+
+    );
+
+
+
+
+
+    // SQL壞掉，會抓到上一筆的正確info_id，但抓到的文章內容(如：big_title, info_no...等)不會跟著info_id去變化，會一直抓info_id=1的文章內容，不知道為什麼好奇怪。
+    // let [prevData] = await connection.execute(
+    //     "SELECT MAX(info_id) info_id, create_time, info_no, big_title, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id WHERE info_cat_id = ? AND info_id < ?  ORDER BY information.info_id DESC LIMIT ?",
+    //     [nowInfoCatId, nowInfoID, 1]
+    // );
+    // console.log("上一筆資料:", prevData); // SQL壞掉
 
     res.json({
         prevData,
