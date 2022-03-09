@@ -41,7 +41,7 @@ router.post("/order/:orderId/delete", async (req, res, next) => {
 // // router.get("/api/member/member-courseorder/:id", memberController.getMemberCourseOrderDetails);
 router.get("/member-courseorderdetails/:id", async (req, res, next) => {
   let [data] = await connection.execute(
-    "SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.id = ?",
+    "SELECT * FROM course_order JOIN member ON course_order.name = member.member_name WHERE course_order.id = ?",
     [req.params.id]
   );
   res.json(data);
@@ -76,11 +76,11 @@ router.get("/member-courseorder/:member_id", async (req, res, next) => {
   const perPage = 5;
   const page = req.query.page > 0 ? (req.query.page - 1) * perPage : 0;
   let [data] = await connection.execute(
-    `SELECT * FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.member_id = ? AND valid = 0 GROUP BY course_order.id ORDER BY course_order.courseDate DESC LIMIT ${perPage} OFFSET ${page}`,
+    `SELECT * FROM course_order JOIN member ON course_order.name = member.member_name WHERE member.member_id = ? AND (valid = 0 OR valid is NULL) GROUP BY course_order.id ORDER BY course_order.courseDate DESC LIMIT ${perPage} OFFSET ${page}`,
     [req.params.member_id]
   );
   const [countData] = await connection.execute(
-    `SELECT COUNT(*) as count FROM course_order JOIN member ON course_order.member_id = member.member_id WHERE course_order.member_id = ? AND valid = 0`,
+    `SELECT COUNT(*) as count FROM course_order JOIN member ON course_order.name = member.member_name WHERE member.member_id = ? AND (valid = 0 OR valid is NULL)`,
     [req.params.member_id]
   );
   const { count } = countData[0];

@@ -476,7 +476,7 @@ router.get("/suit-six", async (req, res, next) => {
 // http://localhost:3002/api/home//card-info-home
 router.get("/card-info-home", async (req, res, next) => {
     let [data] = await connection.execute(
-        "SELECT info_no, info_cat_id, big_title, author, big_img, create_time, one_text_one, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id ORDER BY information.create_time DESC LIMIT ?", [4]
+        "SELECT info_no, info_cat_id, big_title, author, big_img, create_time, one_text_one, info_cat FROM information LEFT JOIN info_cat_id ON information.info_cat_id = info_cat_id.id ORDER BY information.create_time DESC LIMIT ?", [6]
     );
 
     // console.log(data);
